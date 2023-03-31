@@ -3,6 +3,7 @@ package handlers
 import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/models"
+	"article-dispatcher/internal/domain/services"
 	"article-dispatcher/internal/http/responses"
 	"encoding/json"
 	"fmt"
@@ -10,18 +11,26 @@ import (
 )
 
 type ArticleCreateHandler struct {
-	Log logger.Logger
+	Log            logger.Logger
+	ArticleService services.ArticleService
 }
 
 func (ar ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	var a models.Article
-	_ = json.NewDecoder(request.Body).Decode(&a)
+	var article models.Article
+	err := json.NewDecoder(request.Body).Decode(&article)
+	if err != nil {
+		ar.Log.Error(fmt.Sprintf("error decoding request body due to, %s", err))
+	}
 
+	err = ar.ArticleService.Create(request.Context(), article)
+	if err != nil {
+		ar.Log.Error(fmt.Sprintf("error marshalling response data due to, %s", err))
+	}
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
 
 	resp := responses.SuccessResponse{}
-	resp.Data.ID = a.Id
+	resp.Data.ID = article.Id
 	r, err := json.Marshal(resp)
 	if err != nil {
 		ar.Log.Error(fmt.Sprintf("error marshalling response data due to, %s", err))

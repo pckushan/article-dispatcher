@@ -2,6 +2,7 @@ package http
 
 import (
 	"article-dispatcher/internal/domain/adaptors/logger"
+	"article-dispatcher/internal/domain/services"
 	"article-dispatcher/internal/http/handlers"
 	"context"
 	"fmt"
@@ -16,7 +17,7 @@ type Router struct {
 	logger logger.Logger
 }
 
-func (r *Router) Init(l logger.Logger) {
+func (r *Router) Init(l logger.Logger, articleService services.ArticleService) {
 	muxRouter := mux.NewRouter()
 	r.logger = l
 
@@ -30,7 +31,7 @@ func (r *Router) Init(l logger.Logger) {
 	mw := handlers.Middleware{Logger: l}
 	muxRouter.Use(mw.MiddleFunc)
 
-	muxRouter.Handle("/articles", handlers.ArticleCreateHandler{Log: l}).Methods(http.MethodPost)
+	muxRouter.Handle("/articles", handlers.ArticleCreateHandler{Log: l, ArticleService: articleService}).Methods(http.MethodPost)
 }
 
 func (r *Router) Start() error {

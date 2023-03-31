@@ -1,10 +1,12 @@
 package bootstrap
 
 import (
+	"article-dispatcher/internal/adaptors/cache"
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/http"
 	"article-dispatcher/internal/pkg/configs"
 	"article-dispatcher/internal/pkg/log"
+	"article-dispatcher/internal/services"
 	"fmt"
 	sysLog "log"
 	"os"
@@ -15,10 +17,13 @@ func Boot() {
 	initConfigs()
 	l := initLogger()
 
+	repo := cache.NewCache()
+	articleService := services.NewArticleService(l, repo)
+
 	r := &http.Router{
 		Conf: &http.Config,
 	}
-	r.Init(l)
+	r.Init(l, articleService)
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)

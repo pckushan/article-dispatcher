@@ -7,3 +7,9 @@ type Article struct {
 	Body  string   `json:"body"`
 	Tags  []string `json:"tags"`
 }
+
+type Articles []Article
+
+func NewArticleList() Articles {
+	return make([]Article, 0)
+}
