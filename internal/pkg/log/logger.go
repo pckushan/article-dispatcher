@@ -1,4 +1,4 @@
-package logs
+package log
 
 import (
 	domLogger "article-dispatcher/internal/domain/adaptors/logger"

@@ -1,4 +1,4 @@
-package logs
+package log
 
 import (
 	"github.com/caarlos0/env/v6"
