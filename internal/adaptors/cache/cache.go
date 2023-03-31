@@ -58,19 +58,47 @@ func (c Cache) Get(id string) (models.Article, error) {
 }
 
 // Filter get list of articles satisfying with the filter options
-func (c Cache) Filter(tag, date string) (models.Articles, error) {
+func (c Cache) Filter(tag, date string) (models.TaggedArticles, error) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
-	articles := make(models.Articles, 0)
+	// temporary maps
+	articlesMap := make(map[string]int)
+	tagsMap := make(map[string]int)
+
+	taggedArticles := models.TaggedArticles{
+		Tag:         tag,
+		Articles:    make([]string, 0),
+		RelatedTags: make([]string, 0),
+	}
 	tagDateKey := fmt.Sprintf("%s#%s", tag, date)
 	articleIDs, ok := c.tagDateIndexMap[tagDateKey]
 	if !ok {
-		return articles, fmt.Errorf("error, no article found with tag [%s] - date [%s]", tag, date)
+		return taggedArticles, fmt.Errorf("error, no article found with tag [%s] - date [%s]", tag, date)
 	}
 
 	for _, id := range articleIDs {
-		articles = append(articles, c.articles[id])
+		article := c.articles[id]
+		// write into maps to avoid duplications
+		articlesMap[article.Id]++
+		for _, t := range article.Tags {
+			// skip the query tag
+			if t == tag {
+				continue
+			}
+			tagsMap[t]++
+		}
 	}
+	taggedArticles.RelatedTags = getValueSlice(tagsMap)
+	taggedArticles.Articles = getValueSlice(articlesMap)
 
-	return articles, nil
+	return taggedArticles, nil
+}
+
+func getValueSlice(inputMap map[string]int) (outKeySlice []string) {
+	outKeySlice = make([]string, 0)
+	for key, _ := range inputMap {
+		outKeySlice = append(outKeySlice, key)
+	}
+	return
+
 }

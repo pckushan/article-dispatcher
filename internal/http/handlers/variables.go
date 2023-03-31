@@ -1,3 +1,9 @@
 package handlers
 
-const ParamTraceID = "trace-id"
+const (
+	ParamTraceID = "trace-id"
+
+	PathParameterArticleID = "id"
+	PathParameterTag       = "tagName"
+	PathParameterDate      = "date"
+)

@@ -10,6 +10,9 @@ type Article struct {
 
 type Articles []Article
 
-func NewArticleList() Articles {
-	return make([]Article, 0)
+type TaggedArticles struct {
+	Tag         string   `json:"tag"`
+	Count       int      `json:"count"`
+	Articles    []string `json:"articles"`
+	RelatedTags []string `json:"related_tags"`
 }

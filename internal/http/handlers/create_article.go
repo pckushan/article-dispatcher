@@ -15,16 +15,16 @@ type ArticleCreateHandler struct {
 	ArticleService services.ArticleService
 }
 
-func (ar ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	var article models.Article
 	err := json.NewDecoder(request.Body).Decode(&article)
 	if err != nil {
-		ar.Log.Error(fmt.Sprintf("error decoding request body due to, %s", err))
+		ac.Log.Error(fmt.Sprintf("error decoding request body due to, %s", err))
 	}
 
-	err = ar.ArticleService.Create(request.Context(), article)
+	err = ac.ArticleService.Create(request.Context(), article)
 	if err != nil {
-		ar.Log.Error(fmt.Sprintf("error marshalling response data due to, %s", err))
+		ac.Log.Error(fmt.Sprintf("error marshalling response data due to, %s", err))
 	}
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
@@ -33,10 +33,10 @@ func (ar ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	resp.Data.ID = article.Id
 	r, err := json.Marshal(resp)
 	if err != nil {
-		ar.Log.Error(fmt.Sprintf("error marshalling response data due to, %s", err))
+		ac.Log.Error(fmt.Sprintf("error marshalling response data due to, %s", err))
 	}
 	_, err = writer.Write(r)
 	if err != nil {
-		ar.Log.Error(fmt.Sprintf("error writing to response due to, %s", err))
+		ac.Log.Error(fmt.Sprintf("error writing to response due to, %s", err))
 	}
 }

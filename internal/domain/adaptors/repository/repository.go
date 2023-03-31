@@ -9,5 +9,5 @@ import "article-dispatcher/internal/domain/models"
 type Repository interface {
 	Set(article models.Article) error
 	Get(id string) (models.Article, error)
-	Filter(tag, date string) (models.Articles, error)
+	Filter(tag, date string) (models.TaggedArticles, error)
 }

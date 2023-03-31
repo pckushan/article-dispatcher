@@ -32,6 +32,8 @@ func (r *Router) Init(l logger.Logger, articleService services.ArticleService) {
 	muxRouter.Use(mw.MiddleFunc)
 
 	muxRouter.Handle("/articles", handlers.ArticleCreateHandler{Log: l, ArticleService: articleService}).Methods(http.MethodPost)
+	muxRouter.Handle("/articles/{id}", handlers.ArticleGetHandler{Log: l, ArticleService: articleService}).Methods(http.MethodGet)
+	muxRouter.Handle("/tags/{tagName}/{date}", handlers.ArticleFilterHandler{Log: l, ArticleService: articleService}).Methods(http.MethodGet)
 }
 
 func (r *Router) Start() error {
