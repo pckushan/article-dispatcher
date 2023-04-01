@@ -1,5 +1,6 @@
 package models
 
+// nolint:stylecheck
 type Article struct {
 	Id    string   `json:"id"`
 	Title string   `json:"title"`

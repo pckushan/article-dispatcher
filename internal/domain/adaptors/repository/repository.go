@@ -10,7 +10,7 @@ import (
 // Get - retrieve data from repository
 // Filter - fetch conditioned articles data from repository
 type Repository interface {
-	Set(ctx context.Context, article models.Article) error
+	Set(ctx context.Context, article *models.Article) error
 	Get(ctx context.Context, id string) (models.Article, error)
 	Filter(ctx context.Context, tag string, date int) (models.TaggedArticles, error)
 }

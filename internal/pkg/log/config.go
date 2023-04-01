@@ -3,6 +3,7 @@ package log
 import (
 	"github.com/caarlos0/env/v6"
 	"github.com/pkg/errors"
+
 	"log"
 )
 

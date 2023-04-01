@@ -30,18 +30,18 @@ func NewCache(l logger.Logger) repository.Repository {
 }
 
 // Set article data into the cache
-func (c Cache) Set(ctx context.Context, article models.Article) error {
+func (c Cache) Set(ctx context.Context, article *models.Article) error {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	art, ok := c.articles[article.Id]
 	if ok {
 		c.log.Error(fmt.Sprintf("article id [%s] already exist", art.Id))
 		err := fmt.Errorf("error, article id [%s] already exist", art.Id)
-		return RepositoryError{err}
+		return DuplicateError{err}
 	}
 
-	c.articles[article.Id] = article
-	date, err := strconv.Atoi(strings.Replace(article.Date, "-", "", -1))
+	c.articles[article.Id] = *article
+	date, err := strconv.Atoi(strings.ReplaceAll(article.Date, "-", ""))
 	if err != nil {
 		err := fmt.Errorf("error, invalid date format [%s] expected yyyymmdd ", article.Date)
 		return InvalidDataError{err}
@@ -65,8 +65,8 @@ func (c Cache) Get(ctx context.Context, id string) (models.Article, error) {
 	defer c.lock.Unlock()
 	article, ok := c.articles[id]
 	if !ok {
-		err := fmt.Errorf("error, nor article found with id [%s]", id)
-		return article, RepositoryError{err}
+		err := fmt.Errorf("error, no article found with id [%s]", id)
+		return article, DataNotFoundError{err}
 	}
 
 	return article, nil
@@ -89,7 +89,7 @@ func (c Cache) Filter(ctx context.Context, tag string, date int) (models.TaggedA
 	articleIDs, ok := c.tagDateIndexMap[tagDateKey]
 	if !ok {
 		err := fmt.Errorf("error, no article found with tag [%s] - date [%d]", tag, date)
-		return taggedArticles, RepositoryError{err}
+		return taggedArticles, DataNotFoundError{err}
 	}
 
 	for _, id := range articleIDs {
@@ -125,9 +125,8 @@ func (c Cache) Filter(ctx context.Context, tag string, date int) (models.TaggedA
 
 func getValueSlice(inputMap map[string]int) (outKeySlice []string) {
 	outKeySlice = make([]string, 0)
-	for key, _ := range inputMap {
+	for key := range inputMap {
 		outKeySlice = append(outKeySlice, key)
 	}
 	return
-
 }

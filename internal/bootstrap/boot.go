@@ -33,13 +33,13 @@ func Boot() {
 	go func() {
 		<-signals
 		if err := r.Stop(); err != nil {
-			sysLog.Fatalln(fmt.Sprintf("failed to gracefully shutdown the server due to: %s", err))
+			sysLog.Fatalf(fmt.Sprintf("failed to gracefully shutdown the server due to: %s", err))
 		}
 	}()
 
 	err := r.Start()
 	if err != nil {
-		sysLog.Fatalln(fmt.Sprintf("failed to start the server due to: %s", err))
+		sysLog.Fatalf(fmt.Sprintf("failed to start the server due to: %s", err))
 	}
 }
 

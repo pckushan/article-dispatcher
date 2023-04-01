@@ -1,9 +1,11 @@
 package handlers
 
 const (
-	ParamTraceID = "trace-id"
+	ParamTraceID ContextType = "trace-id"
 
 	PathParameterArticleID = "id"
 	PathParameterTag       = "tagName"
 	PathParameterDate      = "date"
 )
+
+type ContextType string

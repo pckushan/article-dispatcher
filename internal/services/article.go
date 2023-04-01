@@ -21,7 +21,7 @@ func NewArticleService(l logger.Logger, repo repository.Repository) services.Art
 	}
 }
 
-func (as ArticleService) Create(ctx context.Context, article models.Article) error {
+func (as ArticleService) Create(ctx context.Context, article *models.Article) error {
 	err := as.repo.Set(ctx, article)
 	if err != nil {
 		as.log.Error(fmt.Sprintf("article service, create article error due to %s", err))

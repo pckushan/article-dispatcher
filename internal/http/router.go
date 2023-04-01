@@ -4,10 +4,11 @@ import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/services"
 	"article-dispatcher/internal/http/handlers"
-	"context"
-	"fmt"
 
 	"github.com/gorilla/mux"
+
+	"context"
+	"fmt"
 	"net/http"
 )
 

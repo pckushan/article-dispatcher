@@ -1,9 +1,10 @@
 package configs
 
 import (
-	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"gopkg.in/oleiade/reflections.v1"
+
+	"fmt"
 	"log"
 	"os"
 )

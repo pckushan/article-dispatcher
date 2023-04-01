@@ -5,4 +5,5 @@ const (
 	UnknownError            = 40000
 	RepositoryError         = 40010
 	InvalidRequestDataError = 40011
+	InvalidPayloadError     = 40012
 )

@@ -4,11 +4,13 @@ import (
 	"article-dispatcher/internal/adaptors/cache"
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/http/responses"
+
+	"github.com/google/uuid"
+	"github.com/pkg/errors"
+
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -56,16 +58,28 @@ func mapError(err error) internalErrorFields {
 			httpStatusCode: http.StatusBadRequest,
 			trace:          err.Error(),
 		}
-	case cache.RepositoryError:
+	case cache.DuplicateError:
 		return internalErrorFields{
 			code:           RepositoryError,
-			httpStatusCode: http.StatusBadRequest,
+			httpStatusCode: http.StatusConflict,
 			trace:          err.Error(),
 		}
 	case cache.InvalidDataError:
 		return internalErrorFields{
 			code:           InvalidRequestDataError,
 			httpStatusCode: http.StatusBadRequest,
+			trace:          err.Error(),
+		}
+	case InvalidPayload:
+		return internalErrorFields{
+			code:           InvalidPayloadError,
+			httpStatusCode: http.StatusBadRequest,
+			trace:          err.Error(),
+		}
+	case cache.DataNotFoundError:
+		return internalErrorFields{
+			code:           InvalidPayloadError,
+			httpStatusCode: http.StatusNotFound,
 			trace:          err.Error(),
 		}
 	default:

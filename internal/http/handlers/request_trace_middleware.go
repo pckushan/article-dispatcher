@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"article-dispatcher/internal/domain/adaptors/logger"
-	"context"
-	"fmt"
+
 	"github.com/google/uuid"
 
+	"context"
+	"fmt"
 	"net/http"
 )
 

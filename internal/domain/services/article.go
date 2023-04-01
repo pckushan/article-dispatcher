@@ -7,7 +7,7 @@ import (
 
 // ArticleService create the article in the system
 type ArticleService interface {
-	Create(ctx context.Context, article models.Article) error
+	Create(ctx context.Context, article *models.Article) error
 	Get(ctx context.Context, id string) (models.Article, error)
 	Filter(ctx context.Context, tag string, date int) (models.TaggedArticles, error)
 }

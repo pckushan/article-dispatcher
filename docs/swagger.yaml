@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: Article Dispatcher - OpenAPI 3.0
+  description: |-
+    This is the API documentation for the article dispatcher service
+  version: 1.0.0
+tags:
+  - name: article
+    description: Everything about articles
+paths:
+  /articles:
+    post:
+      tags:
+        - article
+      summary: Add a new article
+      description: Add a new article
+      operationId: addArticle
+      requestBody:
+        description: Create a new article
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Article'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateError'
+
+  /articles/{id}:
+    get:
+      tags:
+        - article
+      summary: Find article by ID
+      description: Returns a single article
+      operationId: getArticleById
+      parameters:
+        - name: id
+          in: path
+          description: ID of article to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+        '400':
+          description: Duplicate Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateError'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+
+  /tags/{tagName}/{date}:
+    get:
+      tags:
+        - article
+      summary: Filter article by tag and date
+      description: Returns articles' data with tag and date filter
+      operationId: getArticleDataFiltered
+      parameters:
+        - name: tagName
+          in: path
+          description: tag name to be filtered
+          required: true
+          schema:
+            type: string
+            example: "nature"
+        - name: date
+          in: path
+          description: date to be filtered
+          required: true
+          schema:
+            type: integer
+            example: 20230122
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaggedDateArticle'
+        '400':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnIdentifiedError'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '409':
+          description: Duplicate Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateError'
+
+components:
+  schemas:
+    Article:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        title:
+          type: string
+          example: "latest science shows that potato chips are better for you than sugar"
+        date:
+          type: string
+          example: "2023-10-22"
+        body:
+          type: string
+          example: "some text, potentially containing simple markup about how potato chips are great"
+        tags:
+          type: array
+          example: [ "nature","fitness" ]
+    TaggedDateArticle:
+      type: object
+      properties:
+        tag:
+          type: string
+          example: "nature"
+        count:
+          type: integer
+          format: int64
+          example: 3
+        articles:
+          type: array
+          example: ["1","4"]
+        related_tags:
+          type: array
+          example: [ "fun","fitness" ]
+
+    Success:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              example: 10
+    DuplicateError:
+      type: object
+      properties:
+          code:
+            type: integer
+            format: int64
+            example: 40010
+          description:
+            type: string
+            example: "error, article id [1] already exist"
+          trace:
+            type: string
+            example: "2840f52e-844d-44d8-a603-4e49b647022d"
+    NotFoundError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+          example: 40012
+        description:
+          type: string
+          example:  "error, nor article found with id [11]"
+        trace:
+          type: string
+          example: "2840f52e-844d-44d8-a603-4e49b647022d"
+    UnIdentifiedError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+          example: 40012
+        description:
+          type: string
+          example: "something went wrong."
+        trace:
+          type: string
+          example: "2840f52e-844d-44d8-a603-4e49b647022d"
+
+      xml:
+        name: customer
+
+  requestBodies:
+    Article:
+      description: Article object that needs to be added
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Article'

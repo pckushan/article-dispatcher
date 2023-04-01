@@ -4,7 +4,11 @@ type TypeAssertError struct {
 	error
 }
 
-type RepositoryError struct {
+type DuplicateError struct {
+	error
+}
+
+type DataNotFoundError struct {
 	error
 }
 

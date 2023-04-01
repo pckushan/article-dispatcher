@@ -3,9 +3,11 @@ package handlers
 import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/services"
+
+	"github.com/gorilla/mux"
+
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
@@ -41,7 +43,7 @@ func (af ArticleFilterHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 
 	r, err := json.Marshal(taggedArticles)
 	if err != nil {
-		af.Log.Error(fmt.Sprintf("error marshalling response data due to, %s", err))
+		af.Log.Error(fmt.Sprintf("error marshaling response data due to, %s", err))
 	}
 	_, err = writer.Write(r)
 	if err != nil {
