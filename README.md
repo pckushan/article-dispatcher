@@ -9,3 +9,7 @@ Article dispatchcer service for channel nine
 5. routers
 6. documentation
 7. e2e testing
+
+### How to run
+
+1. 

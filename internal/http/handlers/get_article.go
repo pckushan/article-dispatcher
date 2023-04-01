@@ -3,6 +3,8 @@ package handlers
 import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/services"
+	"github.com/prometheus/client_golang/prometheus"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -12,12 +14,21 @@ import (
 )
 
 type ArticleGetHandler struct {
-	Log            logger.Logger
-	ArticleService services.ArticleService
-	ErrorHandler   ErrorHandler
+	Log                  logger.Logger
+	ArticleService       services.ArticleService
+	ErrorHandler         ErrorHandler
+	RequestLatencyReport *prometheus.SummaryVec
 }
 
 func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	start := time.Now()
+	var err error
+	defer func() {
+		ag.RequestLatencyReport.
+			With(map[string]string{"endpoint": "get_article", "error": fmt.Sprintf(`%t`, err != nil)}).
+			Observe(float64(time.Since(start).Microseconds()))
+	}()
+
 	// capture query params
 	vars := mux.Vars(request)
 	articleID := vars[PathParameterArticleID]

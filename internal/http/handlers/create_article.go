@@ -7,18 +7,28 @@ import (
 	"article-dispatcher/internal/http/responses"
 	"encoding/json"
 	"fmt"
+	"github.com/prometheus/client_golang/prometheus"
 	"net/http"
+	"time"
 )
 
 type ArticleCreateHandler struct {
-	Log            logger.Logger
-	ArticleService services.ArticleService
-	ErrorHandler   ErrorHandler
+	Log                  logger.Logger
+	ArticleService       services.ArticleService
+	ErrorHandler         ErrorHandler
+	RequestLatencyReport *prometheus.SummaryVec
 }
 
 func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	start := time.Now()
+	var err error
+	defer func() {
+		ac.RequestLatencyReport.
+			With(map[string]string{"endpoint": "add_article", "error": fmt.Sprintf(`%t`, err != nil)}).
+			Observe(float64(time.Since(start).Microseconds()))
+	}()
 	var article models.Article
-	err := json.NewDecoder(request.Body).Decode(&article)
+	err = json.NewDecoder(request.Body).Decode(&article)
 	if err != nil {
 		ac.Log.Error(fmt.Sprintf("error decoding request body due to, %s", err))
 		errN := InvalidPayload{err}

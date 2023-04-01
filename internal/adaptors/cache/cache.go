@@ -15,7 +15,7 @@ const LatestArticleLimit = 10
 
 type Cache struct {
 	log             logger.Logger
-	lock            *sync.Mutex
+	lock            *sync.RWMutex
 	articles        map[string]models.Article
 	tagDateIndexMap map[string][]string
 }
@@ -23,7 +23,7 @@ type Cache struct {
 func NewCache(l logger.Logger) repository.Repository {
 	return &Cache{
 		log:             l,
-		lock:            &sync.Mutex{},
+		lock:            &sync.RWMutex{},
 		articles:        make(map[string]models.Article),
 		tagDateIndexMap: make(map[string][]string),
 	}
@@ -35,7 +35,6 @@ func (c Cache) Set(ctx context.Context, article *models.Article) error {
 	defer c.lock.Unlock()
 	art, ok := c.articles[article.Id]
 	if ok {
-		c.log.Error(fmt.Sprintf("article id [%s] already exist", art.Id))
 		err := fmt.Errorf("error, article id [%s] already exist", art.Id)
 		return DuplicateError{err}
 	}
@@ -61,8 +60,8 @@ func (c Cache) Set(ctx context.Context, article *models.Article) error {
 
 // Get article data from the cache
 func (c Cache) Get(ctx context.Context, id string) (models.Article, error) {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+	c.lock.RLock()
+	defer c.lock.RUnlock()
 	article, ok := c.articles[id]
 	if !ok {
 		err := fmt.Errorf("error, no article found with id [%s]", id)
@@ -74,14 +73,13 @@ func (c Cache) Get(ctx context.Context, id string) (models.Article, error) {
 
 // Filter get list of articles satisfying with the filter options
 func (c Cache) Filter(ctx context.Context, tag string, date int) (models.TaggedArticles, error) {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+	c.lock.RLock()
+	defer c.lock.RUnlock()
 	// temporary maps
 	articlesMap := make(map[string]int)
 	tagsMap := make(map[string]int)
 
 	taggedArticles := models.TaggedArticles{
-		Tag:         tag,
 		Articles:    make([]string, 0),
 		RelatedTags: make([]string, 0),
 	}
@@ -119,10 +117,12 @@ func (c Cache) Filter(ctx context.Context, tag string, date int) (models.TaggedA
 	taggedArticles.Articles = latestArticleIDs
 	// added one since filtered tag was removed initially from map
 	taggedArticles.Count = len(relatedTags) + 1
+	taggedArticles.Tag = tag
 
 	return taggedArticles, nil
 }
 
+// getValueSlice - get keys of a map as a slice of strings
 func getValueSlice(inputMap map[string]int) (outKeySlice []string) {
 	outKeySlice = make([]string, 0)
 	for key := range inputMap {

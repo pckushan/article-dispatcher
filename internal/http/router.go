@@ -4,6 +4,7 @@ import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/services"
 	"article-dispatcher/internal/http/handlers"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/gorilla/mux"
 
@@ -18,7 +19,7 @@ type Router struct {
 	logger logger.Logger
 }
 
-func (r *Router) Init(l logger.Logger, articleService services.ArticleService) {
+func (r *Router) Init(l logger.Logger, articleService services.ArticleService, latencyReport *prometheus.SummaryVec) {
 	muxRouter := mux.NewRouter()
 	r.logger = l
 
@@ -37,24 +38,27 @@ func (r *Router) Init(l logger.Logger, articleService services.ArticleService) {
 	muxRouter.Handle(
 		"/articles",
 		handlers.ArticleCreateHandler{
-			Log:            l,
-			ArticleService: articleService,
-			ErrorHandler:   errorHandler,
+			Log:                  l,
+			ArticleService:       articleService,
+			ErrorHandler:         errorHandler,
+			RequestLatencyReport: latencyReport,
 		}).Methods(http.MethodPost)
 
 	muxRouter.Handle(
 		"/articles/{id}",
 		handlers.ArticleGetHandler{
-			Log:            l,
-			ArticleService: articleService,
-			ErrorHandler:   errorHandler,
+			Log:                  l,
+			ArticleService:       articleService,
+			ErrorHandler:         errorHandler,
+			RequestLatencyReport: latencyReport,
 		}).Methods(http.MethodGet)
 	muxRouter.Handle(
 		"/tags/{tagName}/{date}",
 		handlers.ArticleFilterHandler{
-			Log:            l,
-			ArticleService: articleService,
-			ErrorHandler:   errorHandler,
+			Log:                  l,
+			ArticleService:       articleService,
+			ErrorHandler:         errorHandler,
+			RequestLatencyReport: latencyReport,
 		}).Methods(http.MethodGet)
 }
 
