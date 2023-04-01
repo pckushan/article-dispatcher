@@ -5,9 +5,11 @@ import (
 	"article-dispatcher/internal/domain/models"
 	"article-dispatcher/internal/domain/services"
 	"article-dispatcher/internal/http/responses"
+
+	"github.com/prometheus/client_golang/prometheus"
+
 	"encoding/json"
 	"fmt"
-	"github.com/prometheus/client_golang/prometheus"
 	"net/http"
 	"time"
 )

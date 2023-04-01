@@ -4,9 +4,9 @@ import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/services"
 	"article-dispatcher/internal/http/handlers"
-	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"context"
 	"fmt"

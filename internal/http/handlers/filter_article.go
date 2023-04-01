@@ -3,15 +3,15 @@ package handlers
 import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/services"
-	"github.com/prometheus/client_golang/prometheus"
-	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type ArticleFilterHandler struct {

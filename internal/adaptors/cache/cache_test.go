@@ -4,9 +4,11 @@ import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/models"
 	"article-dispatcher/internal/pkg/log"
+
+	"github.com/stretchr/testify/assert"
+
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
 )
@@ -181,6 +183,7 @@ func TestCache_Get(t *testing.T) {
 	}
 }
 
+// nolint: funlen
 func TestCache_Filter(t *testing.T) {
 	type fields struct {
 		log             logger.Logger

@@ -2,9 +2,9 @@ package metrics
 
 import (
 	"article-dispatcher/internal/domain/adaptors/logger"
-	"github.com/pkg/errors"
 
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
