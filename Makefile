@@ -8,6 +8,9 @@ build:
 build_for_mac:
 	env GOOS=darwin GOARCH=amd64 go build -o articel-dispatcher
 
+run:
+	./articel-dispatcher
+
 unit_tests:
 	go test -v -count=1 ./...
 
