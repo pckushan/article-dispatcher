@@ -1,20 +1,28 @@
 package cache
 
 import (
+	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/adaptors/repository"
 	"article-dispatcher/internal/domain/models"
+	"context"
 	"fmt"
+	"strconv"
+	"strings"
 	"sync"
 )
 
+const LatestArticleLimit = 10
+
 type Cache struct {
+	log             logger.Logger
 	lock            *sync.Mutex
 	articles        map[string]models.Article
 	tagDateIndexMap map[string][]string
 }
 
-func NewCache() repository.Repository {
+func NewCache(l logger.Logger) repository.Repository {
 	return &Cache{
+		log:             l,
 		lock:            &sync.Mutex{},
 		articles:        make(map[string]models.Article),
 		tagDateIndexMap: make(map[string][]string),
@@ -22,19 +30,25 @@ func NewCache() repository.Repository {
 }
 
 // Set article data into the cache
-func (c Cache) Set(article models.Article) error {
+func (c Cache) Set(ctx context.Context, article models.Article) error {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	art, ok := c.articles[article.Id]
 	if ok {
-		return fmt.Errorf("error, article id [%s] already exist", art.Id)
+		c.log.Error(fmt.Sprintf("article id [%s] already exist", art.Id))
+		err := fmt.Errorf("error, article id [%s] already exist", art.Id)
+		return RepositoryError{err}
 	}
 
 	c.articles[article.Id] = article
-
+	date, err := strconv.Atoi(strings.Replace(article.Date, "-", "", -1))
+	if err != nil {
+		err := fmt.Errorf("error, invalid date format [%s] expected yyyymmdd ", article.Date)
+		return InvalidDataError{err}
+	}
 	// update tag-date index cache
 	for _, tag := range article.Tags {
-		tagDate := fmt.Sprintf("%s#%s", tag, article.Date)
+		tagDate := fmt.Sprintf("%s#%d", tag, date)
 		_, ok := c.tagDateIndexMap[tagDate]
 		if !ok {
 			c.tagDateIndexMap[tagDate] = make([]string, 0)
@@ -46,19 +60,20 @@ func (c Cache) Set(article models.Article) error {
 }
 
 // Get article data from the cache
-func (c Cache) Get(id string) (models.Article, error) {
+func (c Cache) Get(ctx context.Context, id string) (models.Article, error) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	article, ok := c.articles[id]
 	if !ok {
-		return article, fmt.Errorf("error, nor article found with id [%s]", id)
+		err := fmt.Errorf("error, nor article found with id [%s]", id)
+		return article, RepositoryError{err}
 	}
 
 	return article, nil
 }
 
 // Filter get list of articles satisfying with the filter options
-func (c Cache) Filter(tag, date string) (models.TaggedArticles, error) {
+func (c Cache) Filter(ctx context.Context, tag string, date int) (models.TaggedArticles, error) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	// temporary maps
@@ -70,10 +85,11 @@ func (c Cache) Filter(tag, date string) (models.TaggedArticles, error) {
 		Articles:    make([]string, 0),
 		RelatedTags: make([]string, 0),
 	}
-	tagDateKey := fmt.Sprintf("%s#%s", tag, date)
+	tagDateKey := fmt.Sprintf("%s#%d", tag, date)
 	articleIDs, ok := c.tagDateIndexMap[tagDateKey]
 	if !ok {
-		return taggedArticles, fmt.Errorf("error, no article found with tag [%s] - date [%s]", tag, date)
+		err := fmt.Errorf("error, no article found with tag [%s] - date [%d]", tag, date)
+		return taggedArticles, RepositoryError{err}
 	}
 
 	for _, id := range articleIDs {
@@ -88,8 +104,21 @@ func (c Cache) Filter(tag, date string) (models.TaggedArticles, error) {
 			tagsMap[t]++
 		}
 	}
-	taggedArticles.RelatedTags = getValueSlice(tagsMap)
-	taggedArticles.Articles = getValueSlice(articlesMap)
+
+	// get last 10 articles added
+	articleTaggedCount := len(articleIDs)
+	latestArticleIDs := articleIDs
+	// slice only the last required articles
+	if articleTaggedCount > LatestArticleLimit {
+		limit := articleTaggedCount - LatestArticleLimit
+		latestArticleIDs = articleIDs[limit:]
+	}
+
+	relatedTags := getValueSlice(tagsMap)
+	taggedArticles.RelatedTags = relatedTags
+	taggedArticles.Articles = latestArticleIDs
+	// added one since filtered tag was removed initially from map
+	taggedArticles.Count = len(relatedTags) + 1
 
 	return taggedArticles, nil
 }

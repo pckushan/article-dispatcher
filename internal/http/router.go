@@ -21,6 +21,8 @@ func (r *Router) Init(l logger.Logger, articleService services.ArticleService) {
 	muxRouter := mux.NewRouter()
 	r.logger = l
 
+	errorHandler := handlers.ErrorHandler{Log: l}
+
 	r.server = &http.Server{
 		Addr:         fmt.Sprintf(":%s", r.Conf.Host),
 		Handler:      muxRouter,
@@ -31,9 +33,28 @@ func (r *Router) Init(l logger.Logger, articleService services.ArticleService) {
 	mw := handlers.Middleware{Logger: l}
 	muxRouter.Use(mw.MiddleFunc)
 
-	muxRouter.Handle("/articles", handlers.ArticleCreateHandler{Log: l, ArticleService: articleService}).Methods(http.MethodPost)
-	muxRouter.Handle("/articles/{id}", handlers.ArticleGetHandler{Log: l, ArticleService: articleService}).Methods(http.MethodGet)
-	muxRouter.Handle("/tags/{tagName}/{date}", handlers.ArticleFilterHandler{Log: l, ArticleService: articleService}).Methods(http.MethodGet)
+	muxRouter.Handle(
+		"/articles",
+		handlers.ArticleCreateHandler{
+			Log:            l,
+			ArticleService: articleService,
+			ErrorHandler:   errorHandler,
+		}).Methods(http.MethodPost)
+
+	muxRouter.Handle(
+		"/articles/{id}",
+		handlers.ArticleGetHandler{
+			Log:            l,
+			ArticleService: articleService,
+			ErrorHandler:   errorHandler,
+		}).Methods(http.MethodGet)
+	muxRouter.Handle(
+		"/tags/{tagName}/{date}",
+		handlers.ArticleFilterHandler{
+			Log:            l,
+			ArticleService: articleService,
+			ErrorHandler:   errorHandler,
+		}).Methods(http.MethodGet)
 }
 
 func (r *Router) Start() error {

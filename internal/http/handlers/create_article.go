@@ -13,6 +13,7 @@ import (
 type ArticleCreateHandler struct {
 	Log            logger.Logger
 	ArticleService services.ArticleService
+	ErrorHandler   ErrorHandler
 }
 
 func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -25,6 +26,8 @@ func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	err = ac.ArticleService.Create(request.Context(), article)
 	if err != nil {
 		ac.Log.Error(fmt.Sprintf("error marshalling response data due to, %s", err))
+		ac.ErrorHandler.Handle(request.Context(), writer, err)
+		return
 	}
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)

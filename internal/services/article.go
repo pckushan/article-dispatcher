@@ -22,24 +22,24 @@ func NewArticleService(l logger.Logger, repo repository.Repository) services.Art
 }
 
 func (as ArticleService) Create(ctx context.Context, article models.Article) error {
-	err := as.repo.Set(article)
+	err := as.repo.Set(ctx, article)
 	if err != nil {
-		as.log.Error(fmt.Sprintf("article service error due to %s", err))
+		as.log.Error(fmt.Sprintf("article service, create article error due to %s", err))
 	}
 	return err
 }
 
 func (as ArticleService) Get(ctx context.Context, id string) (models.Article, error) {
-	article, err := as.repo.Get(id)
+	article, err := as.repo.Get(ctx, id)
 	if err != nil {
-		as.log.Error(fmt.Sprintf("article service error due to %s", err))
+		as.log.Error(fmt.Sprintf("article service, get article error due to %s", err))
 	}
 	return article, err
 }
-func (as ArticleService) Filter(ctx context.Context, tag, date string) (models.TaggedArticles, error) {
-	taggedArticles, err := as.repo.Filter(tag, date)
+func (as ArticleService) Filter(ctx context.Context, tag string, date int) (models.TaggedArticles, error) {
+	taggedArticles, err := as.repo.Filter(ctx, tag, date)
 	if err != nil {
-		as.log.Error(fmt.Sprintf("article service error due to %s", err))
+		as.log.Error(fmt.Sprintf("article service, filter articles error due to %s", err))
 	}
 
 	return taggedArticles, err

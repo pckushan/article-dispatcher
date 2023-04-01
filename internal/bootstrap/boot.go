@@ -13,11 +13,13 @@ import (
 	"os/signal"
 )
 
+// Boot - initialize configurations, logger and create necessary dependency plugins
+// init the router and serve the routes
 func Boot() {
 	initConfigs()
 	l := initLogger()
 
-	repo := cache.NewCache()
+	repo := cache.NewCache(l)
 	articleService := services.NewArticleService(l, repo)
 
 	r := &http.Router{
@@ -31,15 +33,14 @@ func Boot() {
 	go func() {
 		<-signals
 		if err := r.Stop(); err != nil {
-			sysLog.Fatalln(fmt.Sprintf("failed to gracefully shutdown the server: %s", err))
+			sysLog.Fatalln(fmt.Sprintf("failed to gracefully shutdown the server due to: %s", err))
 		}
 	}()
 
 	err := r.Start()
 	if err != nil {
-		sysLog.Fatal(err)
+		sysLog.Fatalln(fmt.Sprintf("failed to start the server due to: %s", err))
 	}
-
 }
 
 func initConfigs() {

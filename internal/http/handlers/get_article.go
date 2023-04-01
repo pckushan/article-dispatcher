@@ -12,6 +12,7 @@ import (
 type ArticleGetHandler struct {
 	Log            logger.Logger
 	ArticleService services.ArticleService
+	ErrorHandler   ErrorHandler
 }
 
 func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -21,8 +22,9 @@ func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 
 	article, err := ag.ArticleService.Get(request.Context(), articleID)
 	if err != nil {
-		// fixme handle error
 		ag.Log.Error(fmt.Sprintf("error fetching article data due to, %s", err))
+		ag.ErrorHandler.Handle(request.Context(), writer, err)
+		return
 	}
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
