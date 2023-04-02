@@ -122,10 +122,10 @@ correctly.
     ```
 ## Conclusion:
 In conclusion, I implemented a simple API that handles article data in JSON 
-format using Go. I used a modified version of the clean architecture to structure 
-the project, dividing it into four layers. The use of this architecture ensured 
-that the code was modular, reusable, and maintainable. I also employed a testing 
-strategy that included unit and integration tests to ensure that the application
-worked correctly. Overall, my solution provides a simple and efficient 
-implementation of the required API endpoints while following best practices and 
-oooomaintaining code quality.
+format using Go. I used the clean architecture approach to structure  the 
+project, dividing it into several layers. The use of this architecture ensured 
+that the code was **modular**, **reusable**, and **maintainable**. I also 
+employed a testing strategy that included unit and integration tests to ensure 
+that the application worked correctly. Overall, my solution provides a simple 
+and efficient implementation of the required API endpoints while following 
+best practices and maintaining code quality.
