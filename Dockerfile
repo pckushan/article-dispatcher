@@ -1,6 +1,6 @@
-FROM golang:1.16-alpine3.15 AS builder
+FROM golang:1.18-alpine3.15 AS builder
 RUN mkdir /app
-ADD . /app
+COPY . /app
 WORKDIR /app
 
 RUN go build -o article-dispatcher *.go
