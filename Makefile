@@ -19,5 +19,3 @@ e2e_test:
 
 lint:
 	golangci-lint run -v
-
-docker:
