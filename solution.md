@@ -27,6 +27,44 @@ achieve clean architecture. Main idea is to isolate the domain related logics
 and models from the dependency services and plugins and expose them via 
 abstractions. This way it can reuse the core domain with other implementations.   
 
+```text
+                               + ------- +           + -------- +
+                               | REQUEST |           | RESPONSE |
+                               + ------- +           + -------- +
+                                   ||                     /\
+                                   \/                     ||
+                            + ------------ +              ||
+                            |  Middleware  |              ||
+                            + ------------ +              ||
+                                   ||                     ||
+                                   \/                     ||
+                            + ------------ +              ||  
+                            |    Router    |              ||    
+                            + ------------ +              ||  
+                                       ||                 ||
+                                       ||                 ||
+                                       ||   + --------------------------- +
+                                       ||   |         Error Handler       |
+                                       ||   + --------------------------- +
+                                       ||    /\
+                                       \/    ||
+               + ---------- +  =>  + -------------- +  
+               |  Validator |      |   Handlers     |      
+               + ---------- +  <=  + -------------- +    
+                                      ||       /\
+                                      \/       ||
+                         _____________________________________
+                              + ---------- +  <=  + ------- +
+                              | Repository |      | Service |
+                              + ---------- +  =>  + ------- +
+                                ||    /\          
+                                \/    ||     
+                              + ---------- +    
+                              |   Cache    |    
+                              + ---------- +    
+```
+
+
 ## Request Tracing
 A middleware is used to add a `trace id` to all the request coming into the server and 
 logs with the request url. This is helpful in finding any errors occur in the system, 
