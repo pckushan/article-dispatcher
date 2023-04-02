@@ -12,9 +12,19 @@ Article dispatchcer service for channel nine
 
 ### Quick run
 #### Locally
-1. clone the project from the github 
-2. run `go mod tidy` to resolve any dependency libraries
-3. run `make unit_tests` to check unit tests`
-4. run `make lint` to check linters 
-5. run `make build` and `./article-dispatcher`
-6. run `make run` to run the article dispatcher service on default port [8888] for the env `HTTP_SERVER_HOST`
+Prerequisite 
+1. [Install Go](https://go.dev/doc/install) on the local machine version 1.17 or higher
+2. Install make in order to easy run with the included Makefile - [reference](https://makefiletutorial.com/)
+
+Steps
+
+1. clone the project from the github using below command.  
+    `git clone https://github.com/pckushan/article-dispatcher.git`
+    This will clone the project into a new folder name `article-dispatcher` 
+2. run `go mod download` to download any dependency libraries
+3. run `make unit_tests` or `go test -v -count=1 ./...` to check unit tests`results
+4. run `make lint` or `golangci-lint run -v `to check linters results
+5. run `make build` or `go build -o articel-dispatcher` 
+    NOTE: to run on MAC
+    run `make build_for_mac` or `env GOOS=darwin GOARCH=amd64 go build -o articel-dispatcher`
+6. run `make run` or `./article-dispatcher` to run the article dispatcher service on default port [8888] for the env `HTTP_SERVER_HOST`
