@@ -80,11 +80,11 @@ func TestCache_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := Cache{
-				log:             tt.fields.log,
-				lock:            tt.fields.lock,
-				articles:        tt.fields.articles,
-				tagDateIndexMap: tt.fields.tagDateIndexMap,
+			c := cache{
+				log:          tt.fields.log,
+				lock:         tt.fields.lock,
+				articles:     tt.fields.articles,
+				tagDateIndex: tt.fields.tagDateIndexMap,
 			}
 			if err := c.Set(tt.args.ctx, tt.args.article); (err != nil) != tt.wantErr {
 				t.Errorf("Set() error = %v, wantErr %v", err, tt.wantErr)
@@ -165,11 +165,11 @@ func TestCache_Get(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := Cache{
-				log:             tt.fields.log,
-				lock:            tt.fields.lock,
-				articles:        tt.fields.articles,
-				tagDateIndexMap: tt.fields.tagDateIndexMap,
+			c := cache{
+				log:          tt.fields.log,
+				lock:         tt.fields.lock,
+				articles:     tt.fields.articles,
+				tagDateIndex: tt.fields.tagDateIndexMap,
 			}
 			got, err := c.Get(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -321,11 +321,11 @@ func TestCache_Filter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := Cache{
-				log:             tt.fields.log,
-				lock:            tt.fields.lock,
-				articles:        tt.fields.articles,
-				tagDateIndexMap: tt.fields.tagDateIndexMap,
+			c := cache{
+				log:          tt.fields.log,
+				lock:         tt.fields.lock,
+				articles:     tt.fields.articles,
+				tagDateIndex: tt.fields.tagDateIndexMap,
 			}
 			got, err := c.Filter(tt.args.ctx, tt.args.tag, tt.args.date)
 			if (err != nil) != tt.wantErr {

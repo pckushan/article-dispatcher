@@ -6,6 +6,7 @@ import (
 	"article-dispatcher/internal/domain/services"
 	"article-dispatcher/internal/http/responses"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"encoding/json"
@@ -32,16 +33,21 @@ func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	var article models.Article
 	err = json.NewDecoder(request.Body).Decode(&article)
 	if err != nil {
-		ac.Log.Error(fmt.Sprintf("error decoding request body due to, %s", err))
-		errN := InvalidPayload{err}
-		ac.ErrorHandler.Handle(request.Context(), writer, errN)
+		ac.ErrorHandler.Handle(request.Context(), writer, InvalidPayload{
+			fmt.Errorf("error decoding request body due to, %w", err)})
+		return
+	}
+
+	// validate request struct
+	if err = validate(&article); err != nil {
+		ac.ErrorHandler.Handle(request.Context(), writer, ValidationError{
+			fmt.Errorf("invalid request body due to, %w", err)})
 		return
 	}
 
 	err = ac.ArticleService.Create(request.Context(), &article)
 	if err != nil {
-		ac.Log.Error(fmt.Sprintf("error marshaling response data due to, %s", err))
-		ac.ErrorHandler.Handle(request.Context(), writer, err)
+		ac.ErrorHandler.Handle(request.Context(), writer, fmt.Errorf("error marshaling response data, %w", err))
 		return
 	}
 	writer.Header().Add("Content-Type", "application/json")
@@ -57,4 +63,9 @@ func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	if err != nil {
 		ac.Log.Error(fmt.Sprintf("error writing to response due to, %s", err))
 	}
+}
+
+// validate - income request validator for the article payload
+func validate(article *models.Article) error {
+	return validator.New().Struct(article)
 }

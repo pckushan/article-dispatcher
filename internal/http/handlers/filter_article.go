@@ -36,7 +36,13 @@ func (af ArticleFilterHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	vars := mux.Vars(request)
 	articleTag := vars[PathParameterTag]
 	articleDate := vars[PathParameterDate]
-	// todo validate date format
+
+	if !validatePathDate(articleDate) {
+		err = fmt.Errorf("requested article date format validation error")
+		af.ErrorHandler.Handle(request.Context(), writer, ValidationError{err})
+		return
+	}
+
 	date, err := strconv.Atoi(articleDate)
 	if err != nil {
 		af.Log.Error(fmt.Sprintf("error converting input date due to, %s", err))
@@ -60,4 +66,10 @@ func (af ArticleFilterHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	if err != nil {
 		af.Log.Error(fmt.Sprintf("error writing to response due to, %s", err))
 	}
+}
+
+func validatePathDate(date string) bool {
+	_, err := time.Parse("20060102", date)
+
+	return err == nil
 }

@@ -6,6 +6,7 @@ import (
 	"article-dispatcher/internal/http/handlers"
 
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"context"
@@ -64,7 +65,7 @@ func (r *Router) Init(l logger.Logger, articleService services.ArticleService, l
 
 func (r *Router) Start() error {
 	r.logger.Info(fmt.Sprintf("server starting on port: %s", r.Conf.Host))
-	if err := r.server.ListenAndServe(); err != nil {
+	if err := r.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 	return nil

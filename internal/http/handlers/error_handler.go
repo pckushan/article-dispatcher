@@ -52,22 +52,16 @@ func (e *ErrorHandler) createErrorResponse(ctx context.Context, err error) respo
 
 func mapError(err error) internalErrorFields {
 	switch err.(type) {
-	case cache.TypeAssertError:
-		return internalErrorFields{
-			code:           CacheTypeAssertError,
-			httpStatusCode: http.StatusBadRequest,
-			trace:          err.Error(),
-		}
-	case cache.DuplicateError:
-		return internalErrorFields{
-			code:           RepositoryError,
-			httpStatusCode: http.StatusConflict,
-			trace:          err.Error(),
-		}
 	case cache.InvalidDataError:
 		return internalErrorFields{
 			code:           InvalidRequestDataError,
 			httpStatusCode: http.StatusBadRequest,
+			trace:          err.Error(),
+		}
+	case cache.DataNotFoundError:
+		return internalErrorFields{
+			code:           InvalidPayloadError,
+			httpStatusCode: http.StatusNotFound,
 			trace:          err.Error(),
 		}
 	case InvalidPayload:
@@ -76,10 +70,11 @@ func mapError(err error) internalErrorFields {
 			httpStatusCode: http.StatusBadRequest,
 			trace:          err.Error(),
 		}
-	case cache.DataNotFoundError:
+
+	case ValidationError:
 		return internalErrorFields{
-			code:           InvalidPayloadError,
-			httpStatusCode: http.StatusNotFound,
+			code:           InvalidRequestError,
+			httpStatusCode: http.StatusBadRequest,
 			trace:          err.Error(),
 		}
 	default:
@@ -90,6 +85,6 @@ func mapError(err error) internalErrorFields {
 				trace:          "something went wrong.",
 			}
 		}
-		return mapError(errors.Unwrap(err)) // todo ??
+		return mapError(errors.Unwrap(err))
 	}
 }

@@ -6,6 +6,7 @@ Prerequisites
 Before you can build and run this web service, you need to have the following software installed on your system:
 
 * Go ( version> 1.17 )
+  * [install or update](https://go.dev/doc/install)
 * Docker
 
 ## Building Locally
@@ -21,11 +22,15 @@ To build the web service locally, follow these steps:
     ```
 3. Build the binary:
     ```shell
-    go build -o articel-dispatcher main.go
+    go build -o articel-dispatcher
     ```
    OR in a mac,
     ```shell
     env GOOS=darwin GOARCH=amd64 go build -o articel-dispatcher
+    ```
+   OR in a linux,
+    ```shell
+    env GOOS=linux GOARCH=amd64 go build -o articel-dispatcher
     ```
 
 ## Running Locally
@@ -63,7 +68,8 @@ docker run -p 8888:8888 article-dispatcher
 ```
 The web service will now be running on http://localhost:8888
 
-## Endpoints
+## Endpoints 
+API documentation can be found [here](docs/swagger.yaml)
 This web service has the following endpoints:
 
 POST /articles
@@ -134,6 +140,9 @@ curl --location --request GET 'localhost:8888/tags/nature/20160923'
 as 17 and I think it should be 3. Since requirement was to get the count 
 of the distinct tags related to the date and tag requested.    
 
+- Requirement was to keep the data in memory and the data is cached to remain until the project 
+is up and running. It will NOT persist any data added once the service is restarted.
+
 ## Limitations & Improvements
 
 #### request rate limiter
@@ -149,3 +158,6 @@ of the distinct tags related to the date and tag requested.
 #### scaling
 
 - can use a kubernetes configuration to scale with multiple instances.
+
+  NOTE: if multiple instances used need to use a central caching mechanism
+  or background sync the records to all the instances.

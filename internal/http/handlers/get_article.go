@@ -3,6 +3,7 @@ package handlers
 import (
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/services"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
@@ -32,6 +33,11 @@ func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 	// capture query params
 	vars := mux.Vars(request)
 	articleID := vars[PathParameterArticleID]
+	if !validateArticleID(articleID) {
+		err = fmt.Errorf("requested article id format validation error")
+		ag.ErrorHandler.Handle(request.Context(), writer, ValidationError{err})
+		return
+	}
 
 	article, err := ag.ArticleService.Get(request.Context(), articleID)
 	if err != nil {
@@ -50,4 +56,12 @@ func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 	if err != nil {
 		ag.Log.Error(fmt.Sprintf("error writing to response due to, %s", err))
 	}
+}
+
+// validateArticleID - converts the id path parameter into a integer and check for errors,
+// if it converts into an integer it validates as a valid article id
+func validateArticleID(id string) bool {
+	_, err := strconv.Atoi(id)
+
+	return err == nil
 }
