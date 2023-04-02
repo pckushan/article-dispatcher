@@ -19,3 +19,9 @@ e2e_test:
 
 lint:
 	golangci-lint run -v
+
+docker_build:
+	docker build -t article-dispatcher .
+
+docker_run:
+	docker run -p 8888:8888 article-dispatcher
