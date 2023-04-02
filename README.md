@@ -79,7 +79,6 @@ Example:
 ```shell
 curl --location --request POST 'localhost:8888/articles' \
 --data-raw '{
-  "id": "1",
   "title": "latest science shows that potato chips are better for you than sugar",
   "date" : "2016-09-23",
   "body" : "some text, potentially containing simple markup about how potato chips are great",
@@ -136,6 +135,8 @@ curl --location --request GET 'localhost:8888/tags/nature/20160923'
 
 ## Assumptions
 
+- Create endpoint does not consider the input `id` of the request payload, and it incrementally creates the id by the 
+system internally for the article added and returns the created id in the response. 
 - In the last endpoint's implementation, as per the example it showed count 
 as 17 and I think it should be 3. Since requirement was to get the count 
 of the distinct tags related to the date and tag requested.    
@@ -144,6 +145,11 @@ of the distinct tags related to the date and tag requested.
 is up and running. It will NOT persist any data added once the service is restarted.
 
 ## Limitations & Improvements
+
+#### monitoring 
+
+- service metrics are implemented and grafana dashboards can be used to 
+monitor the performance and changes of the service. 
 
 #### request rate limiter
 
