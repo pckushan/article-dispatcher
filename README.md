@@ -13,7 +13,7 @@ Article dispatchcer service for channel nine
 ### Quick run
 #### Locally
 Prerequisite 
-1. [Install Go](https://go.dev/doc/install) on the local machine version 1.17 or higher
+1. [Install Go](https://go.dev/doc/install) on the local machine, version 1.17 or higher (if not update)
 2. Install make in order to easy run with the included Makefile - [reference](https://makefiletutorial.com/)
 
 Steps
