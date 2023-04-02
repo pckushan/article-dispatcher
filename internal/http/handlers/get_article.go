@@ -34,7 +34,7 @@ func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 	vars := mux.Vars(request)
 	articleID := vars[PathParameterArticleID]
 	if !validateArticleID(articleID) {
-		err = fmt.Errorf("requested article id format validation error")
+		err = fmt.Errorf("invalid article id format")
 		ag.ErrorHandler.Handle(request.Context(), writer, ValidationError{err})
 		return
 	}

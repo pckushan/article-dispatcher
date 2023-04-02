@@ -38,7 +38,7 @@ func (af ArticleFilterHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	articleDate := vars[PathParameterDate]
 
 	if !validatePathDate(articleDate) {
-		err = fmt.Errorf("requested article date format validation error")
+		err = fmt.Errorf("invalid article date format")
 		af.ErrorHandler.Handle(request.Context(), writer, ValidationError{err})
 		return
 	}

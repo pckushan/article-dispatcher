@@ -20,21 +20,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Article'
+              $ref: '#/components/schemas/ArticleRequestBody'
         required: true
       responses:
-        '200':
-          description: Successful operation
+        '201':
+          description: article successfully created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Success'
         '400':
-          description: Invalid input
+          description: invalid request body.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DuplicateError'
+                $ref: '#/components/schemas/InvalidInputError'
 
   /articles/{id}:
     get:
@@ -53,19 +53,19 @@ paths:
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: article retrieve successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Article'
         '400':
-          description: Duplicate Request
+          description: article ID validation error.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DuplicateError'
+                $ref: '#/components/schemas/ArticleIDValidationError'
         '404':
-          description: Article not found
+          description: article not found.
           content:
             application/json:
               schema:
@@ -95,32 +95,41 @@ paths:
             example: 20230122
       responses:
         '200':
-          description: successful operation
+          description: tagged article retrieve successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TaggedDateArticle'
         '400':
-          description: Something went wrong
+          description: invalid request path params.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnIdentifiedError'
+                $ref: '#/components/schemas/TaggedArticleValidationError'
         '404':
-          description: Article not found
+          description: article not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFoundError'
-        '409':
-          description: Duplicate Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DuplicateError'
 
 components:
   schemas:
+    ArticleRequestBody:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "latest science shows that potato chips are better for you than sugar"
+        date:
+          type: string
+          example: "2023-10-22"
+        body:
+          type: string
+          example: "some text, potentially containing simple markup about how potato chips are great"
+        tags:
+          type: array
+          example: [ "nature","fitness" ]
     Article:
       type: object
       properties:
@@ -167,16 +176,16 @@ components:
               type: integer
               format: int64
               example: 10
-    DuplicateError:
+    InvalidInputError:
       type: object
       properties:
           code:
             type: integer
             format: int64
-            example: 40010
+            example: 40013
           description:
             type: string
-            example: "error, article id [1] already exist"
+            example: "invalid request body due to, Key: 'Article.Date' Error:Field validation for 'Date' failed on the 'datetime' tag"
           trace:
             type: string
             example: "2840f52e-844d-44d8-a603-4e49b647022d"
@@ -189,7 +198,33 @@ components:
           example: 40012
         description:
           type: string
-          example:  "error, nor article found with id [11]"
+          example:  "error, no article found with id [11]"
+        trace:
+          type: string
+          example: "2840f52e-844d-44d8-a603-4e49b647022d"
+    ArticleIDValidationError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+          example: 40013
+        description:
+          type: string
+          example:  "invalid article id format"
+        trace:
+          type: string
+          example: "2840f52e-844d-44d8-a603-4e49b647022d"
+    TaggedArticleValidationError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+          example: 40013
+        description:
+          type: string
+          example:  "invalid article date format"
         trace:
           type: string
           example: "2840f52e-844d-44d8-a603-4e49b647022d"
