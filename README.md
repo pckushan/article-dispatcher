@@ -71,7 +71,7 @@ Reverses the string passed in the request body.
 
 Example:
 ```shell
-$ curl --location --request POST 'localhost:8888/articles' \
+curl --location --request POST 'localhost:8888/articles' \
 --data-raw '{
   "id": "1",
   "title": "latest science shows that potato chips are better for you than sugar",
@@ -94,7 +94,7 @@ Returns the corresponding article related with the id.
 Example:
 
 ```shell
-$ curl --location --request GET 'localhost:8888/articles/1'
+curl --location --request GET 'localhost:8888/articles/1'
 ```
 ```json
 {
@@ -112,7 +112,7 @@ Filters the articles data with the tag related to the date.
 Example:
 
 ```shell
-$ curl --location --request GET 'localhost:8888/tags/nature/20160923'
+curl --location --request GET 'localhost:8888/tags/nature/20160923'
 ```
 
 ```json
