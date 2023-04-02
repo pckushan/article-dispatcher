@@ -77,7 +77,7 @@ curl --location --request POST 'localhost:8888/articles' \
   "title": "latest science shows that potato chips are better for you than sugar",
   "date" : "2016-09-23",
   "body" : "some text, potentially containing simple markup about how potato chips are great",
-  "tags" : [ "nature", "pink"]
+  "tags" : [ "nature", "fitness"]
 }'
 ```
 ```json
@@ -102,7 +102,7 @@ curl --location --request GET 'localhost:8888/articles/1'
   "title": "latest science shows that potato chips are better for you than sugar",
   "date" : "2016-09-23",
   "body" : "some text, potentially containing simple markup about how potato chips are great",
-  "tags" : [ "nature", "pink"]
+  "tags" : [ "nature", "fitness"]
 }
 ```
 
@@ -123,7 +123,7 @@ curl --location --request GET 'localhost:8888/tags/nature/20160923'
         "1"
     ],
     "related_tags": [
-        "pink"
+        "fitness"
     ]
 }
 ```
