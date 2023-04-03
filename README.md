@@ -140,7 +140,7 @@ before the build and run.
 NOTE: below commands should be executed inside the service folder `article-dispatcher`
 
 
-- run linters
+- run linters ([golangci-lint](https://golangci-lint.run/usage/install/) need to be installed)
     ```shell
     make lint
     ```
