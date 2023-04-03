@@ -41,17 +41,18 @@ func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 
 	article, err := ag.ArticleService.Get(request.Context(), articleID)
 	if err != nil {
-		ag.Log.Error(fmt.Sprintf("error fetching article data due to, %s", err))
+		err = fmt.Errorf("error fetching article data due to, %w", err)
 		ag.ErrorHandler.Handle(request.Context(), writer, err)
 		return
 	}
-	writer.Header().Add("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
 
 	r, err := json.Marshal(article)
 	if err != nil {
-		ag.Log.Error(fmt.Sprintf("error marshaling response data due to, %s", err))
+		err = fmt.Errorf("error marshaling response with, %w", err)
+		ag.ErrorHandler.Handle(request.Context(), writer, err)
 	}
+	writer.Header().Add("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
 	_, err = writer.Write(r)
 	if err != nil {
 		ag.Log.Error(fmt.Sprintf("error writing to response due to, %s", err))

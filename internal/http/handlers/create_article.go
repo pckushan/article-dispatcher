@@ -50,8 +50,6 @@ func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 		ac.ErrorHandler.Handle(request.Context(), writer, fmt.Errorf("error marshaling response data, %w", err))
 		return
 	}
-	writer.Header().Add("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusCreated)
 
 	resp := responses.SuccessResponse{}
 	resp.Data.ID = article.Id
@@ -59,6 +57,8 @@ func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	if err != nil {
 		ac.Log.Error(fmt.Sprintf("error marshaling response data due to, %s", err))
 	}
+	writer.Header().Add("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusCreated)
 	_, err = writer.Write(r)
 	if err != nil {
 		ac.Log.Error(fmt.Sprintf("error writing to response due to, %s", err))

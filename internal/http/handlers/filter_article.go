@@ -55,13 +55,13 @@ func (af ArticleFilterHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 		af.ErrorHandler.Handle(request.Context(), writer, err)
 		return
 	}
-	writer.Header().Add("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
 
 	r, err := json.Marshal(taggedArticles)
 	if err != nil {
 		af.Log.Error(fmt.Sprintf("error marshaling response data due to, %s", err))
 	}
+	writer.Header().Add("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
 	_, err = writer.Write(r)
 	if err != nil {
 		af.Log.Error(fmt.Sprintf("error writing to response due to, %s", err))
