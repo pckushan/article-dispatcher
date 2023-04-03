@@ -48,8 +48,8 @@ func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 
 	r, err := json.Marshal(article)
 	if err != nil {
-		err = fmt.Errorf("error marshaling response with, %w", err)
-		ag.ErrorHandler.Handle(request.Context(), writer, err)
+		ag.ErrorHandler.Handle(request.Context(), writer,
+			ResponseMarshalError{fmt.Errorf("error marshaling response data, %w", err)})
 	}
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)

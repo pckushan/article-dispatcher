@@ -7,3 +7,7 @@ type InvalidPayload struct {
 type ValidationError struct {
 	error
 }
+
+type ResponseMarshalError struct {
+	error
+}

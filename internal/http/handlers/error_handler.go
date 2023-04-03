@@ -24,6 +24,7 @@ type internalErrorFields struct {
 	trace          string
 }
 
+// Handle - error handling
 func (e *ErrorHandler) Handle(ctx context.Context, writer http.ResponseWriter, err error) {
 	e.Log.Error(fmt.Sprintf("error executing request due to : %s", err.Error()))
 	errorBody := e.createErrorResponse(ctx, err)
@@ -50,6 +51,7 @@ func (e *ErrorHandler) createErrorResponse(ctx context.Context, err error) respo
 	}
 }
 
+// mapError - mapp all the errors in the service into internal error codes
 func mapError(err error) internalErrorFields {
 	switch err.(type) {
 	case cache.InvalidDataError:

@@ -43,22 +43,25 @@ func (af ArticleFilterHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 		return
 	}
 
+	// convert date into integer format `yyyymmdd`
 	date, err := strconv.Atoi(articleDate)
 	if err != nil {
-		af.Log.Error(fmt.Sprintf("error converting input date due to, %s", err))
+		err = fmt.Errorf("error converting input date due to, %w", err)
 		af.ErrorHandler.Handle(request.Context(), writer, err)
 		return
 	}
 	taggedArticles, err := af.ArticleService.Filter(request.Context(), articleTag, date)
 	if err != nil {
-		af.Log.Error(fmt.Sprintf("error fetching tagged articles data due to, %s", err))
+		err = fmt.Errorf("error fetching tagged articles data due to, %w", err)
 		af.ErrorHandler.Handle(request.Context(), writer, err)
 		return
 	}
 
 	r, err := json.Marshal(taggedArticles)
 	if err != nil {
-		af.Log.Error(fmt.Sprintf("error marshaling response data due to, %s", err))
+		af.ErrorHandler.Handle(request.Context(), writer,
+			ResponseMarshalError{fmt.Errorf("error marshaling response data, %w", err)})
+		return
 	}
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)

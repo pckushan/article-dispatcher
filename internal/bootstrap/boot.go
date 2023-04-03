@@ -21,6 +21,7 @@ func Boot() {
 	l := initLogger()
 	m := initMetrics(l)
 
+	// plugin a cache to the repository
 	repo := cache.NewCache(l)
 	articleService := services.NewArticleService(l, repo)
 
@@ -29,9 +30,11 @@ func Boot() {
 	}
 	r.Init(l, articleService, metrics.RequestLatency)
 
+	// interrupt channel to stop the servers
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 
+	// channel to ensure graceful shutdown of the servers
 	exitAll := make(chan bool, 1)
 
 	go func() {

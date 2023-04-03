@@ -30,6 +30,7 @@ func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 			With(map[string]string{"endpoint": "add_article", "error": fmt.Sprintf(`%t`, err != nil)}).
 			Observe(float64(time.Since(start).Microseconds()))
 	}()
+
 	var article models.Article
 	err = json.NewDecoder(request.Body).Decode(&article)
 	if err != nil {
@@ -45,9 +46,10 @@ func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 		return
 	}
 
+	// call service to create the article
 	err = ac.ArticleService.Create(request.Context(), &article)
 	if err != nil {
-		ac.ErrorHandler.Handle(request.Context(), writer, fmt.Errorf("error marshaling response data, %w", err))
+		ac.ErrorHandler.Handle(request.Context(), writer, fmt.Errorf("error creating article with, %w", err))
 		return
 	}
 
@@ -55,7 +57,9 @@ func (ac ArticleCreateHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 	resp.Data.ID = article.Id
 	r, err := json.Marshal(resp)
 	if err != nil {
-		ac.Log.Error(fmt.Sprintf("error marshaling response data due to, %s", err))
+
+		ac.ErrorHandler.Handle(request.Context(), writer,
+			ResponseMarshalError{fmt.Errorf("error marshaling response data, %w", err)})
 	}
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusCreated)
