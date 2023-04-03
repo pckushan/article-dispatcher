@@ -38,6 +38,9 @@ func TestCache_Set(t *testing.T) {
 		Tags:  []string{"fun", "health", "fitness"},
 	}
 
+	articleWithInvalidDate := article
+	articleWithInvalidDate.Date = "abcdef"
+
 	articlesCache := make(map[string]models.Article, 0)
 
 	articlesCache[article.Id] = article
@@ -63,7 +66,7 @@ func TestCache_Set(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "set_article_to_id_already_existing_cache",
+			name: "set_already_existing_article_id",
 			fields: fields{
 				log:             l,
 				lock:            &sync.RWMutex{},
@@ -73,6 +76,20 @@ func TestCache_Set(t *testing.T) {
 			args: args{
 				ctx:     context.Background(),
 				article: &article,
+			},
+			wantErr: false,
+		},
+		{
+			name: "set_article_with_invalid_date",
+			fields: fields{
+				log:             l,
+				lock:            &sync.RWMutex{},
+				articles:        articlesCache,
+				tagDateIndexMap: make(map[string][]string),
+			},
+			args: args{
+				ctx:     context.Background(),
+				article: &articleWithInvalidDate,
 			},
 			wantErr: true,
 		},
@@ -93,6 +110,7 @@ func TestCache_Set(t *testing.T) {
 	}
 }
 
+// nolint:funlen
 func TestCache_Get(t *testing.T) {
 	type fields struct {
 		log             logger.Logger
@@ -133,7 +151,7 @@ func TestCache_Get(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "get_article_from_cache",
+			name: "get_article",
 			fields: fields{
 				log:             l,
 				lock:            &sync.RWMutex{},
@@ -148,7 +166,7 @@ func TestCache_Get(t *testing.T) {
 			want:    article,
 		},
 		{
-			name: "get_non_existing_article_from_cache",
+			name: "non_existing_article",
 			fields: fields{
 				log:             l,
 				lock:            &sync.RWMutex{},
@@ -158,6 +176,21 @@ func TestCache_Get(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				id:  "2",
+			},
+			wantErr: true,
+			want:    models.Article{},
+		},
+		{
+			name: "invalid_article_id",
+			fields: fields{
+				log:             l,
+				lock:            &sync.RWMutex{},
+				articles:        articlesCache,
+				tagDateIndexMap: make(map[string][]string),
+			},
+			args: args{
+				ctx: context.Background(),
+				id:  "abc",
 			},
 			wantErr: true,
 			want:    models.Article{},
@@ -176,6 +209,7 @@ func TestCache_Get(t *testing.T) {
 				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
 			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Get() got = %v, want %v", got, tt.want)
 			}
@@ -268,7 +302,7 @@ func TestCache_Filter(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "filter_existing_article_from_cache",
+			name: "filter_existing_article",
 			fields: fields{
 				log:             l,
 				lock:            &sync.RWMutex{},
@@ -284,7 +318,7 @@ func TestCache_Filter(t *testing.T) {
 			want:    expectedTaggedArticle,
 		},
 		{
-			name: "filter_non_existing_article_from_cache",
+			name: "filter_non_existing_article",
 			fields: fields{
 				log:             l,
 				lock:            &sync.RWMutex{},
@@ -295,6 +329,25 @@ func TestCache_Filter(t *testing.T) {
 				ctx:  context.Background(),
 				tag:  "invalid",
 				date: 20230330,
+			},
+			wantErr: true,
+			want: models.TaggedArticles{
+				Articles:    make([]string, 0),
+				RelatedTags: make([]string, 0),
+			},
+		},
+		{
+			name: "filter_article_with_invalid_date",
+			fields: fields{
+				log:             l,
+				lock:            &sync.RWMutex{},
+				articles:        articlesCache,
+				tagDateIndexMap: tagDateIndexMap,
+			},
+			args: args{
+				ctx:  context.Background(),
+				tag:  "health",
+				date: 2023033034234,
 			},
 			wantErr: true,
 			want: models.TaggedArticles{
