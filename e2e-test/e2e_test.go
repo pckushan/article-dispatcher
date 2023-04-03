@@ -45,7 +45,7 @@ func TestE2E(t *testing.T) {
 
 	cache := cache2.NewCache(l)
 
-	// new fetcher and block services
+	// article service implement
 	articleService := services2.NewArticleService(l, cache)
 
 	// init router
