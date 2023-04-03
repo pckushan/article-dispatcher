@@ -133,6 +133,42 @@ curl --location --request GET 'localhost:8888/tags/nature/20160923'
 }
 ```
 
+## Makefile commands
+Following commands make sure that the code base is clean and tested 
+before the build and run.
+
+- run linters
+    ```shell
+    make lint
+    ```
+- run unit tests
+  ```shell
+  make unit_tests
+  ```
+
+- run end to end test
+  ```shell
+  make e2e_test
+  ```
+
+- build binary for macos
+    ```shell
+    make build_for_mac
+    ```
+- run end to end test
+  ```shell
+  make run
+  ```
+
+## Metrics & Dashboard
+
+`metrics` exposes an endpoint to let `Prometheus` scrape application metrics. Generated metrics were used
+to create the grafana dashboard.
+
+* [grafana.json](docs/grafana.json) file can be imported as a dashboard.
+
+![dashboard](./docs/dashboard.png)
+
 ## Assumptions
 
 - Create endpoint does not consider the input `id` of the request payload, and it incrementally creates the id by the 
@@ -148,8 +184,9 @@ is up and running. It will NOT persist any data added once the service is restar
 
 #### monitoring 
 
-- service metrics are implemented and grafana dashboards can be used to 
-monitor the performance and changes of the service. 
+- service metrics and grafana dashboards implemented, this can be used to 
+monitor the performance and observe the changes of the service.
+- can add alerts for the thresholds to notify about the service. 
 
 #### request rate limiter
 
