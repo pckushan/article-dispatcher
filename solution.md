@@ -118,8 +118,8 @@ correctly.
 - [end to end](/e2e-test/e2e_test.go) test was written to sequentially execute 3 endpoints and 
 validate the responses.
   ```shell
-      go test -tags=e2e ./e2e-test -v -count=1
-    ```
+  go test -tags=e2e ./e2e-test -v -count=1
+  ```
 ## Conclusion:
 In conclusion, I implemented a simple API that handles article data in JSON 
 format using Go. I used the clean architecture approach to structure  the 
