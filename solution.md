@@ -115,8 +115,8 @@ correctly.
     ```shell
     go test -v -count=1 ./...
     ```
-  - [end to end](/e2e-test/e2e_test.go) test was written to sequentially execute 3 endpoints and 
-  validate the responses.
+- [end to end](/e2e-test/e2e_test.go) test was written to sequentially execute 3 endpoints and 
+validate the responses.
   ```shell
       go test -tags=e2e ./e2e-test -v -count=1
     ```
