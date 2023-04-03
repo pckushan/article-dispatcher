@@ -3,14 +3,14 @@
 package e2e_test
 
 import (
-	cache2 "article-dispatcher/internal/adaptors/cache"
+	cacheImp "article-dispatcher/internal/adaptors/cache"
 	"article-dispatcher/internal/domain/adaptors/logger"
 	"article-dispatcher/internal/domain/models"
 	"article-dispatcher/internal/http"
 	"article-dispatcher/internal/http/responses"
 	"article-dispatcher/internal/pkg/log"
 	"article-dispatcher/internal/pkg/metrics"
-	services2 "article-dispatcher/internal/services"
+	servicesImp "article-dispatcher/internal/services"
 	"os"
 	"os/signal"
 	"syscall"
@@ -43,10 +43,10 @@ func TestE2E(t *testing.T) {
 		t.FailNow()
 	}
 
-	cache := cache2.NewCache(l)
+	cache := cacheImp.NewCache(l)
 
 	// article service implement
-	articleService := services2.NewArticleService(l, cache)
+	articleService := servicesImp.NewArticleService(l, cache)
 
 	// init router
 	port := http.Config.Host
