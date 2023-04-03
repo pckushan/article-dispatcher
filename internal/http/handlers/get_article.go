@@ -33,6 +33,8 @@ func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 	// capture query params
 	vars := mux.Vars(request)
 	articleID := vars[PathParameterArticleID]
+
+	// validate input article id
 	if !validateArticleID(articleID) {
 		err = fmt.Errorf("invalid article id format")
 		ag.ErrorHandler.Handle(request.Context(), writer, ValidationError{err})
@@ -59,10 +61,9 @@ func (ag ArticleGetHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 	}
 }
 
-// validateArticleID - converts the id path parameter into a integer and check for errors,
+// validateArticleID - converts the id path parameter into an integer and check for errors,
 // if it converts into an integer it validates as a valid article id
 func validateArticleID(id string) bool {
 	_, err := strconv.Atoi(id)
-
 	return err == nil
 }

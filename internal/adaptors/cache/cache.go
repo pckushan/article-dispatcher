@@ -75,13 +75,16 @@ func (c cache) Get(_ context.Context, id string) (models.Article, error) {
 func (c cache) Filter(_ context.Context, tag string, date int) (models.TaggedArticles, error) {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
-	// temporary maps
+	// temporary tags map to get the counts and avoid deduplication
 	tagsMap := make(map[string]struct{})
 
+	// initialize maps
 	taggedArticles := models.TaggedArticles{
 		Articles:    make([]string, 0),
 		RelatedTags: make([]string, 0),
 	}
+	// restructure tagdate key
+	// example `tagName#20230330`
 	tagDateKey := fmt.Sprintf("%s#%d", tag, date)
 	articleIDs, ok := c.tagDateIndex[tagDateKey]
 	if !ok {
@@ -89,6 +92,8 @@ func (c cache) Filter(_ context.Context, tag string, date int) (models.TaggedArt
 		return taggedArticles, DataNotFoundError{err}
 	}
 
+	// get the articles one by one from the articleIDs returned from the indexMap and add the tags into the temporary
+	// map defined earlier
 	for _, id := range articleIDs {
 		article := c.articles[id]
 		// write into maps to avoid duplications
@@ -110,6 +115,7 @@ func (c cache) Filter(_ context.Context, tag string, date int) (models.TaggedArt
 		latestArticleIDs = articleIDs[limit:]
 	}
 
+	// returns only the values of the map into a string slice
 	relatedTags := getValueSlice(tagsMap)
 	taggedArticles.RelatedTags = relatedTags
 	taggedArticles.Articles = latestArticleIDs
