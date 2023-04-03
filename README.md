@@ -135,7 +135,10 @@ curl --location --request GET 'localhost:8888/tags/nature/20160923'
 
 ## Makefile commands
 Following commands make sure that the code base is clean and tested 
-before the build and run.
+before the build and run. 
+
+NOTE: below commands should be executed inside the service folder `article-dispatcher`
+
 
 - run linters
     ```shell
