@@ -6,7 +6,7 @@ the clean architecture approach to structure the project, dividing  it into seve
 Here, I will describe my approach to implementing the API, including my choice of language, 
 the architecture, request tracing, error handling, best practices, service monitoring,  and the testing strategy.
 
-## Choice of Language:
+## Choice of Language: GO
 - well-suited for **high-performance** and **concurrent** applications.
 - has a straightforward syntax that is easy to read and learn. 
 - easy to write the code quickly and efficiently. 
@@ -93,7 +93,7 @@ logging will happen there at the `error handler` with the trace of the error.
 to time by running, `golangci-lint run`  
 NOTE: if command not found, need to [install](https://golangci-lint.run/) `golangci-lint` 
 
-* API contract is created using [swagger](docs/swagger.yaml) 
+* API contract is created using [swagger](docs/openapi.yaml) 
 * [Makefile](Makefile) is used in executing commands 
 
 ## Service Monitoring
@@ -103,8 +103,9 @@ NOTE: if command not found, need to [install](https://golangci-lint.run/) `golan
 nine_article_dispatcher_request_latency_micro_sum{endpoint="add_article",error="false"} 206
 nine_article_dispatcher_request_latency_micro_count{endpoint="add_article",error="false"} 1
 ```
-- grafana dashboard need to be integrated to monitor and observe the service performance. 
-
+- grafana dashboard is integrated to monitor and observe the service performance.
+  
+![dashboard](./docs/dashboard.png)
 
 ## Testing Strategy:
 -  used the standard Go testing package to write unit tests and integration tests 
